@@ -111,7 +111,7 @@ class mail {
                 prop.put("mail.smtp.starttls.enable", "true");
         }
 
-        //emailin gönderilmesi için gerekli
+        //emailin gönderilmesi için gerekli session ayarları yapılır
         Session session = Session.getInstance(prop,new javax.mail.Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {return new PasswordAuthentication(email, sifre);} 
         });
@@ -120,15 +120,15 @@ class mail {
             Message msg = new MimeMessage(session);
             msg.setFrom(new InternetAddress(email));
 
-            InternetAddress[] IAhedef = new InternetAddress[filex.i];
+            InternetAddress[] IAhedef = new InternetAddress[filex.i];//i= yollanacak email sayisi
             for (int i=0; i<filex.i; i++) {
-                IAhedef[i]=new InternetAddress(hedef[i]);
+                IAhedef[i]=new InternetAddress(hedef[i]);//hedef emailler stringden InternetAdress türüne dönüştürülür
             }
 
             msg.setRecipients(Message.RecipientType.TO, IAhedef);
             msg.setSubject(konu);
             msg.setText(mesaj);
-
+            //mesaj yollanır
             Transport.send(msg);
             System.out.println("Emailiniz basariyla iletilti.");
 
@@ -140,7 +140,9 @@ class mail {
 
 
 class filex{
-    static int i;
+    static int i;//yollanacak email sayısını tutar
+    
+    //genel üyeleri dosyadan okuyup String arrayi olarak döndüren fonksiyon
     public static String[] readG() {
         File f=new File("uye.txt");
         String genel[]=new String[50];
@@ -148,17 +150,17 @@ class filex{
         String[] word=new String[3];
         int n=0;
         i=0;
+
         try {
             Scanner scan=new Scanner(f);
-            while (scan.hasNextLine() && n!=2){
+            while (scan.hasNextLine() && n!=2){//dosya devam ettikçe ve hashtag sayısı 2yi geçmekdikçe döndü devam eder
                 satir=scan.nextLine();
-                if (satir.toCharArray()[0]=='#'){
+                if (satir.toCharArray()[0]=='#')//satirin ilk karatkeri hashtag ise n arttırılır
                     n++;
-                }
                 else{
-                    word=satir.split("\t");
-                    genel[i]=word[2];
-                    i++;
+                    word=satir.split("\t");//satiri \t yi baz alarak parçalara ayırır
+                    genel[i]=word[2];//email kelimesi kaydedilir
+                    i++;//yollanacak email sayisi arttırılır
                 }
             }
             scan.close();
@@ -168,23 +170,25 @@ class filex{
         return genel;
     }
 
+    //elit üyeleri dosyadan okuyup String arrayi olarak döndüren fonksiyon
     public static String[] readE() {
         int n=0;
         i=0;
         File f= new File("uye.txt");
         String elit[]=new String[50];
         String satir,word[]=new String[3];
+
         try {
             Scanner scan=new Scanner(f);
-            while (scan.hasNextLine()){
+            while (scan.hasNextLine()){//dosya sonuna kadar döngü devam eder
                 satir=scan.nextLine();
-                if (satir.toCharArray()[0]=='#') n++;
-                if (n==2){
+                if (satir.toCharArray()[0]=='#') n++;//satırın ilk karakteri # ise n arttır
+                if (n==2){//okunan hashtag sayısı iki olunca satırları okumaya başla
                     while (scan.hasNextLine()){
                         satir=scan.nextLine();
-                        word=satir.split("\t");
-                        elit[i]=word[2];
-                        i++;
+                        word=satir.split("\t");//satırı \t baz alarak parçalara ayır ve değişkene at
+                        elit[i]=word[2];//3. parça olan emaili değişkene at
+                        i++;//okunan email sayısını arttır
                     }
                     break;
                 }
@@ -196,21 +200,23 @@ class filex{
         return elit;
     }
 
+    //dosyadan her üyeyi okuyan fonksiyon
     public static String[] readAll() {
         File f=new File("uye.txt");
         String all[]=new String[50];
         String satir;
         String[] word=new String[3];
         i=0;
+
         try {
             Scanner scan=new Scanner(f);
-            while (scan.hasNextLine()){
+            while (scan.hasNextLine()){//dosyanın sonuna kadar oku
                 satir=scan.nextLine();
-                if (satir.toCharArray()[0]=='#') continue;
+                if (satir.toCharArray()[0]=='#') continue;//satırın ilk karateri # ise döngünün başına dön
                 else{
-                    word=satir.split("\t");
-                    all[i]=word[2];
-                    i++;
+                    word=satir.split("\t");//satırı \t baz alarak parçalara ayır ve değişkene at
+                    all[i]=word[2];//email parçası değişkene atanır
+                    i++;//okunan email sayısı arttırılır
                 }
             }
             scan.close();
@@ -221,11 +227,12 @@ class filex{
     }
 
 
+    //dosyaya elit üye eklenir
     public static void writeE(elituye x){
         try{
-            FileWriter fw=new FileWriter("uye.txt",true);
-            String exp=x.ad+"\t"+x.soyad+"\t"+x.email+'\n';
-            fw.write(exp);
+            FileWriter fw=new FileWriter("uye.txt",true);//dosya append modunda açılır
+            String exp=x.ad+"\t"+x.soyad+"\t"+x.email+'\n';//elitüye türünde gelen değişkenler tek bir stringe dönüşür
+            fw.write(exp);//uye ad soyad emaili dosyanın sonuna eklenir
             fw.close();
         } catch (IOException e){
             System.out.println("Dosya olusturulurken hata olustu.");
@@ -236,22 +243,23 @@ class filex{
         File f=new File("uye.txt");
         String dosyag="",dosyae="",satir="";
         int n=0;
+
         try {
             Scanner scan=new Scanner(f);
             while (scan.hasNextLine()){
                 satir=scan.nextLine();
-                if (satir.toCharArray()[0]=='#'){
-                    n++;
-                    if (n==2){
-                        dosyae=dosyae.concat(satir+"\n");
+                if (satir.toCharArray()[0]=='#'){//okunan satırın ilk karakteri # ise devam eder
+                    n++;//okunan # sayısı arttırılır
+                    if (n==2){//iki tane # okunmuş (elit üye kısmına gelinmiş) ise devam eder
+                        dosyae=dosyae.concat(satir+"\n");//elit üyeleri içeren tek bir stringin sonuna son okunan satir eklenir
                         while(scan.hasNextLine()){
-                            satir=scan.nextLine();
+                            satir=scan.nextLine();//uyeler dosya bitene kadar dosyae'nin sonuna eklenmeye devam eder
                             dosyae=dosyae.concat(satir+"\n");
                         }
                         break;
                     }
                 }
-                dosyag=dosyag.concat(satir+"\n");
+                dosyag=dosyag.concat(satir+"\n");//genel üyeleri içeren satirler Stringin sonuna eklenir
             }
             scan.close();
         } catch (FileNotFoundException e) {
@@ -259,8 +267,8 @@ class filex{
         }
         try{
             FileWriter fw=new FileWriter("uye.txt");
-            String exp=dosyag+x.ad+"\t"+x.soyad+"\t"+x.email+'\n'+dosyae;
-            fw.write(exp);
+            String exp=dosyag+x.ad+"\t"+x.soyad+"\t"+x.email+'\n'+dosyae;//genel üyeler ile elit üyeler arasına yeni genel üye eklenir
+            fw.write(exp);//dosya editlenmiş bir şekilde tekrar yazılır
             fw.close();
         } catch (IOException e){
             System.out.println("Dosya olusturulurken hata olustu.");
@@ -276,6 +284,7 @@ class uye{
     };
     public String ad,soyad,email;
 
+    //genel üye ekleme menüsü
     public static void guyeekleme(){
         String ad,soyad,email;
         System.out.print("Uyenin Adi:");
@@ -287,6 +296,7 @@ class uye{
         filex.writeG(new geneluye(ad, soyad, email));
     }
 
+    //elit üye ekleme menüsü
     public static void euyeekleme(){
         String ad,soyad,email;
         System.out.print("Uyenin Adi:");
