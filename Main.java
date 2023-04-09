@@ -29,13 +29,13 @@ public class Main{
             scan.nextLine();
                 switch (inp){
                 case 1:
-                    uye.euyeekleme();
+                    uye.eEkle();
                     break;
                 case 2:
-                    uye.guyeekleme();
+                    uye.gEkle();
                     break;
                 case 3:
-                    mailmenu();
+                    mailMenu();
                     break;
                 case 4:
                     return;
@@ -45,7 +45,7 @@ public class Main{
         }
     }
 
-    public static void mailmenu(){
+    public static void mailMenu(){
 
         int hedefGrup;
         String email="",sifre="",konu="",mesaj="";
@@ -248,7 +248,7 @@ class filex{
             Scanner scan=new Scanner(f);
             while (scan.hasNextLine()){
                 satir=scan.nextLine();
-                if (satir.toCharArray()[0]=='#'){//okunan satırın ilk karakteri # ise devam eder
+                if (!satir.equals("") && satir.toCharArray()[0]=='#'){//okunan satırın ilk karakteri # ise devam eder
                     n++;//okunan # sayısı arttırılır
                     if (n==2){//iki tane # okunmuş (elit üye kısmına gelinmiş) ise devam eder
                         dosyae=dosyae.concat(satir+"\n");//elit üyeleri içeren tek bir stringin sonuna son okunan satir eklenir
@@ -259,7 +259,8 @@ class filex{
                         break;
                     }
                 }
-                dosyag=dosyag.concat(satir+"\n");//genel üyeleri içeren satirler Stringin sonuna eklenir
+                if (!satir.equals(""))//satır boş ise görmezden gelinir
+                    dosyag=dosyag.concat(satir+"\n");//genel üyeleri içeren satırlar Stringin sonuna eklenir
             }
             scan.close();
         } catch (FileNotFoundException e) {
@@ -285,7 +286,7 @@ class uye{
     public String ad,soyad,email;
 
     //genel üye ekleme menüsü
-    public static void guyeekleme(){
+    public static void gEkle(){
         String ad,soyad,email;
         System.out.print("Uyenin Adi:");
         ad=Main.scan.nextLine().trim();
@@ -297,7 +298,7 @@ class uye{
     }
 
     //elit üye ekleme menüsü
-    public static void euyeekleme(){
+    public static void eEkle(){
         String ad,soyad,email;
         System.out.print("Uyenin Adi:");
         ad=Main.scan.nextLine().trim();
